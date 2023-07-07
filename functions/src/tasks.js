@@ -11,15 +11,16 @@ export async function getTasks(req, res) {
 }
 
 export async function addTask(req, res) {
-    const { title, uid } = req.body;
+    const {title, uid} = req.body;
     if(!title || !uid) {
-        res.status(401).send({ success: false, message: 'Not a valid request' });
+        res.status(401).send({ success: false, message: 'Not a valid request'});
         return;
     }
+    // Create a document with the following field values in it
     const newTask = {
         title, uid, done: false,
-        createdAt: FieldValue.serverTimestamp(newTask)
+        createdAt: FieldValue.serverTimestamp()
     }
-    await coll.add();
-    getTasks(req, res);
+    await coll.add(newTask);
+    res.status(201).send({ success: true, message: 'Item Added'});
 }
