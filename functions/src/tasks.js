@@ -20,7 +20,7 @@ export async function addTask(req, res) {
     }
     // Create a document with the following field values in it
     const newTask = {
-        title, id, done: false,
+        title, uid, done: false,
         createdAt: FieldValue.serverTimestamp(),
     }
     await coll.add(newTask);
@@ -29,9 +29,10 @@ export async function addTask(req, res) {
 
 //Update tasks
 export async function updateTask(req,res) {
-    const { done, uid } = req.body;
+    const {uid} = req.params;
+    const { done, id } = req.body;
 
-    if(!id) {
+    if(!id || !uid) {
         res.status(401).send({success: false, message: "Not a valid request"});
         return; 
     }
@@ -41,7 +42,11 @@ export async function updateTask(req,res) {
         updatedAt: FieldValue.serverTimestamp()
     }
 
-    await coll.doc(id).update(updates);
+    await coll.doc(id).update(updates)
+        .catch(err => {
+            res.status(500).send({ message: err });
+            return;
+        });
 
     getTasks(req,res);
 
