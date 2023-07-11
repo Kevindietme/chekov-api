@@ -52,4 +52,18 @@ export async function updateTask(req,res) {
 
 }
 
+//delete task
 
+export async function deleteTask(req,res) {
+    const { uid } = req.params;
+    const { id } = req.body;
+
+    if (!uid) {
+        res.status(401).send({success: false, nessage: "Not a valid request"});
+        return; 
+    }
+
+    await coll.doc(id).delete();
+
+    getTasks(req,res);
+}
